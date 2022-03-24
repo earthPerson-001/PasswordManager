@@ -1,3 +1,8 @@
+encrypted.db
+encryption.db
+passwords.db
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
