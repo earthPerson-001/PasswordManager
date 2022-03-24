@@ -4,13 +4,10 @@ from random import *
 from encryp import *
 import threading
 
-
+#making these global as to use only one account all over the app
 generated_password = ''
 username = ''
 password = ''
-
-conn = sqlite3.connect('passwords.db')
-c = conn.cursor()
 
 main_app = Tk()
 main_app.title('Password Manager')
@@ -52,7 +49,7 @@ def generate_password():
 
 def save_to_vault(username1):
     def save(user_input):
-        conn1 = sqlite3.connect('encrypted.db')
+        conn1 = sqlite3.connect('encrypted_passwords.db')
         name = str(input_3.get())
         c1 = conn1.cursor()
         credentials = [{"id": name,
@@ -154,9 +151,17 @@ def display_saved_password_frame(username1):
     forget_frame()
     saved_password_frame.grid()
     list1 = username_retuner(username1)
-    for record in list1:
-        Label(saved_password_frame, text=record[1], font=("Times", 12)).grid(row=list1.index(record), column=0)
-        Button(saved_password_frame, text="Show Password", command=lambda: show_password(record), font=("Times", 9)).grid(row=list1.index(record), column=1, padx=25)
+    noSavedPasswordsLabel = Label(saved_password_frame, text="There aren't any saved passwords", font=("Times", 14))
+    toGeneratePasswordButton = Button(saved_password_frame, text="Save Passwords", command=lambda: display_password_generator_frame(), font=("Times", 12))
+    if len(list1)==0:
+        noSavedPasswordsLabel.grid(row=0, column=0)
+        toGeneratePasswordButton.grid(row=1, column=0, padx=25)
+    else:
+        noSavedPasswordsLabel.destroy()
+        toGeneratePasswordButton.destroy()
+        for record in list1:
+            Label(saved_password_frame, text=record[1], font=("Times", 12)).grid(row=list1.index(record), column=0)
+            Button(saved_password_frame, text="Show Password", command=lambda: show_password(record), font=("Times", 9)).grid(row=list1.index(record), column=1, padx=25)
 
 
 def display_check_password_security_frame():
@@ -217,15 +222,16 @@ def display_logout_message_box():
 def display_vault_frame():
     def erase_vault():
         def delete():
-            c = 0
-            while c < 4:
-                if login_verifier(username, input_box.get()):
-                    table_deleter(username)
-                else:
-                    label9.config(text="Incorrect password, try again")
-                    c += 1
+            if login_verifier(username, input_box.get()):
+                table_deleter(username)
+                display_vault_frame()
+                Label(vault_frame, text="Vault deleted successfully", font=("times", 12)).grid(row=2, column=2)
+                app3.destroy()
+            else:
+                label9.config(text="Incorrect password, try again")
+                
         app3 = Toplevel()
-        label9 = Label(app3, text="Please enter the masterpassword to remove your vault", font=("times", 12))
+        label9 = Label(app3, text="Please enter the master-password to remove your vault", font=("times", 12))
         label9.grid(row=0, column=0, columnspan=3)
         input_box = Entry(app3, font=("Times", 12))
         Label(app3, text="Password", font=("times", 12)).grid(row=1, column=0)
@@ -238,7 +244,6 @@ def display_vault_frame():
     Label(vault_frame, text=username, font=("times", 12)).grid(row=0, column=2, padx=30)
     Button(vault_frame, text="Erase Vault", font=("times", 12), command=erase_vault).grid(row=1, column=1, pady=20, padx=30)
 
-
 def login(username2, password2, lbl):
     forget_frame()
     global username, password
@@ -249,19 +254,20 @@ def login(username2, password2, lbl):
         lbl.grid(row=0, column=1)
 
         def login_automator():
-            login_tab.after(2000, lambda: display_saved_password_frame(username))
+            display_saved_password_frame(username)
         multi(login_automator)
 
     else:
         def thread1():
             app1 = Toplevel()
-            app1.geometry('300x300')
+            app1.geometry('500x100')
             app1.title('login failed')
 
             Label(app1, text='Login failed', fg="red", font=("times new roman", 18)).pack()
+            Label(app1, text='The provided login credintials are incorrect.', font=("times new roman", 14)).pack()
+            Label(app1, text='Please try again', font=("times new roman", 14)).pack()
         multi(thread1)
-        login_tab.after(2000, display_signup_frame())
-
+        display_signup_frame()
 
 def display_login_frame():
     forget_frame()
@@ -281,18 +287,16 @@ def display_login_frame():
 
 
 def username_creator_verifier(u, p):
-    if username_creator(u, p):
-        username_creator(u, p)
+    if username_creator(u, p):          
         label = Label(login_tab, text="Login Page", font=("calibre", 12), fg="red", bg="#ffffff")
         login(u, p, label)
-
-    elif not username_creator(u, p):
+    else:
         def thread2():
             app2 = Toplevel()
-            app2.geometry('400x400')
-            app2.title('login successful')
+            app2.geometry('100x500')
+            app2.title('Login status')
 
-            Label(app2, text="Signup failed : username already taken", fg="red", font=("times new roman", 15)).pack()
+            Label(app2, text="Signup failed : username already taken", fg="red", font=("times new roman", 14)).pack()
 
         multi(thread2)
 
@@ -359,7 +363,5 @@ if username == '' and password == '':
     login_page_shifter()
 
 main_app.config(menu=menu_bar)
-
-conn.close()
 
 main_app.mainloop()
