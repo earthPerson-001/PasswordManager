@@ -6,9 +6,9 @@ A simple database management using sqllite is also done.
 Here cryptography library is used for some encryption stuffs.
 
 ## For building the project, the requirements are:
-1 Python 3
-2 Tkinter
-3 Cryptography, 
+- Python 3
+- Tkinter
+- Cryptography, 
     Install using pip by (`pip install cryptography`)
 
 ## To launcha the app:
