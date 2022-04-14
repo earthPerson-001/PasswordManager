@@ -5,8 +5,8 @@ FROM gitpod/workspace-full-vnc
 USER gitpod
 
 # Install tkinter
-RUN sudo apt-get -q update \
- && sudo apt-get install -yq \
-  python3-tk  \
+RUN sudo apt update \
+ && sudo apt install -y \
+  python-tk  \
  && sudo rm -rf /var/lib/apt/lists/*
 
