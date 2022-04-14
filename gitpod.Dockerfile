@@ -7,6 +7,6 @@ USER gitpod
 # Install tkinter
 RUN sudo apt update \
  && sudo apt install -y \
-  python-tk  \
+  python3-tk  \
  && sudo rm -rf /var/lib/apt/lists/*
 
