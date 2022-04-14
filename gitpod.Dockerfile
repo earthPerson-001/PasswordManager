@@ -6,4 +6,4 @@ USER gitpod
 
 # Install tkinter
 RUN sudo apt-get update && \
-    sudo install-packages tk-dev
+    sudo install-packages tk tk-dev
